@@ -13,36 +13,37 @@ section .text
 global main
 
 main:
-    mov rbp, rsp; for correct debugging
-    ; Calculate the sum of digits
-    mov rax, [number]       ; Load the number into RAX
-    xor rbx, rbx            ; Clear RBX, which will serve as our digit sum
+    mov rax, [number]       
+    xor rbx, rbx            
 
     PRINT_STRING "Input Number: "
     PRINT_DEC 8, [number]
     NEWLINE
     
+    PRINT_STRING "Digits: "
 extract_loop:
-    xor rdx, rdx            ; Clear RDX for division
-    mov rcx, 10             ; We will divide by 10
-    div rcx                 ; RAX / RCX, quotient in RAX, remainder in RDX
-    add rbx, rdx            ; Add the remainder (current digit) to RBX
-    cmp rax, 0              ; Compare RAX to zero
-    jne extract_loop        ; If not equal (not zero), there are more digits to process
+    xor rdx, rdx            
+    mov rcx, 10             
+    div rcx                 
+    PRINT_DEC 8, rdx
+    PRINT_STRING ","
+    add rbx, rdx            
+    cmp rax, 0              
+    jne extract_loop        
 
     ; Store the sum in sum_result
-    mov [sum_result], rbx   ; Store the sum in the memory location 'sum_result'
+    mov [sum_result], rbx   
 
     ; Perform division: number / sum_result
-    mov rax, [number]       ; Load the number into RAX
-    mov rbx, [sum_result]   ; Load the sum into RBX
-    xor rdx, rdx            ; Clear RDX for division
-    div rbx                 ; Divide RAX by RBX, quotient in RAX, remainder in RDX
+    mov rax, [number]       
+    mov rbx, [sum_result]   
+    xor rdx, rdx            
+    div rbx                 
 
     ; Store the result of division and remainder
-    mov [division_result], rax ; Store the result of division in memory variable 'division_result'
-    mov [remainder_result], rdx ; Store the remainder of division in memory variable 'remainder_result'
-
+    mov [division_result], rax 
+    mov [remainder_result], rdx 
+    NEWLINE
     PRINT_STRING "Sum of digits: "
     PRINT_DEC 8, sum_result
     NEWLINE
