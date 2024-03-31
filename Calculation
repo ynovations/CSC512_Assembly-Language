@@ -1,0 +1,57 @@
+%include "io64.inc"
+
+section .data
+    number dq 135           ; Define 'number' as double quadword for 64-bit
+    sum_result dq 0         ; Initialize sum_result to zero in the .data section
+    division_result dq 0    ; Reserve space for the result of division
+    remainder_result dq 0   ; Reserve space for the remainder of division
+
+section .bss
+    digit_count resb 1      ; Store the number of digits extracted
+
+section .text
+global main
+
+main:
+    mov rbp, rsp; for correct debugging
+    ; Calculate the sum of digits
+    mov rax, [number]       ; Load the number into RAX
+    xor rbx, rbx            ; Clear RBX, which will serve as our digit sum
+
+    PRINT_STRING "Input Number: "
+    PRINT_DEC 8, [number]
+    NEWLINE
+    
+extract_loop:
+    xor rdx, rdx            ; Clear RDX for division
+    mov rcx, 10             ; We will divide by 10
+    div rcx                 ; RAX / RCX, quotient in RAX, remainder in RDX
+    add rbx, rdx            ; Add the remainder (current digit) to RBX
+    cmp rax, 0              ; Compare RAX to zero
+    jne extract_loop        ; If not equal (not zero), there are more digits to process
+
+    ; Store the sum in sum_result
+    mov [sum_result], rbx   ; Store the sum in the memory location 'sum_result'
+
+    ; Perform division: number / sum_result
+    mov rax, [number]       ; Load the number into RAX
+    mov rbx, [sum_result]   ; Load the sum into RBX
+    xor rdx, rdx            ; Clear RDX for division
+    div rbx                 ; Divide RAX by RBX, quotient in RAX, remainder in RDX
+
+    ; Store the result of division and remainder
+    mov [division_result], rax ; Store the result of division in memory variable 'division_result'
+    mov [remainder_result], rdx ; Store the remainder of division in memory variable 'remainder_result'
+
+    PRINT_STRING "Sum of digits: "
+    PRINT_DEC 8, sum_result
+    NEWLINE
+    PRINT_STRING "Quotient: "
+    PRINT_DEC 8, division_result
+    NEWLINE
+    PRINT_STRING "Remainder: "
+    PRINT_DEC 8, remainder_result
+    
+    ; Exiting the program
+    xor rdi, rdi            
+    ret
