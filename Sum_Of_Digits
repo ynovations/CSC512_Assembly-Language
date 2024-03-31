@@ -1,0 +1,29 @@
+%include "io64.inc"
+
+section .data
+    number dq 12345         
+    sum_result dq 0         
+
+section .bss
+    digit_count resb 1      
+
+section .text
+global main
+
+main:
+    mov rax, [number]       
+    xor rbx, rbx            
+
+extract_loop:
+    xor rdx, rdx            
+    mov rcx, 10             
+    div rcx                 
+    add rbx, rdx            
+    cmp rax, 0              
+    jne extract_loop        
+
+    PRINT_DEC 8, rbx
+    mov [sum_result], rbx       ; Store the sum in sum_result
+
+    xor rdi, rdi            
+    ret                 
