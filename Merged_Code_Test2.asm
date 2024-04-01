@@ -2,6 +2,7 @@
 
 section .data
     ;Numeric Variables
+    input dq 0
     number dq 0
     sum_result dq 0         
     division_result dq 0    
@@ -14,9 +15,6 @@ section .data
     not_harshad_msg db "Harshad Number: No", 0
     cont db "Do you want to continue (Y/N)? ", 0
 
-section .bss
-    inputBuffer resb 256      ; Store the number of digits extracted
-
 section .text
 global main
 
@@ -24,11 +22,11 @@ main:
     mov rbp, rsp; for correct debugging
 
 start:
-
     PRINT_STRING "Input Number: "
-    GET_STRING inputBuffer, 256     ; Read input into buffer, max 256 characters
-    mov eax, 0                      ; EAX will hold the final integer
-    mov esi, inputBuffer            ; ESI points to the start of the buffer
+    GET_STRING input, 256     
+    mov eax, 0                      
+    mov esi, input
+
 ascii_to_int_loop:
     mov bl, [esi]        
     cmp bl, 0            
@@ -42,28 +40,25 @@ ascii_to_int_loop:
     cmp bl, '9'
     jg invalid_input
 
+;Conversion from ASCII to DEC
     sub bl, '0'          
     imul eax, eax, 10    
     add eax, ebx         
     xor ebx, ebx         
-    ;PRINT_DEC 8, EBX
-    ;NEWLINE
     inc esi              
     jmp ascii_to_int_loop     
 
 end_read:
-    ; Terminate the string with a null terminator
     mov byte [esi], 0
+
 validate_input:
-    ;PRINT_DEC 8, RAX     
-    ;NEWLINE
-    cmp eax, 0         ; Check if the result is zero
-    jz invalid_input              ; If the result is zero, it means the input was empty
+    cmp eax, 0         
+    jz invalid_input              
 
     cmp rax, 0          
     jl negative_input
     xor rbx, rbx                
-    
+    mov [number], rax
     PRINT_STRING "Digits: "
     
 digit_extract:
@@ -104,42 +99,38 @@ calculation:
 
 negative_input:
     PRINT_STRING nega
-    jmp end
+    jmp yes_no_loop
 
 invalid_input:
-    ;NEWLINE
     PRINT_STRING err
-    jmp end  
+    jmp yes_no_loop  
     
 not_harshad:
     NEWLINE
     PRINT_STRING not_harshad_msg
-    jmp end
+    jmp yes_no_loop
 
 is_harshad:
     NEWLINE
     PRINT_STRING harshad_msg
-    jmp end
+    jmp yes_no_loop
     
-end:
+yes_no_loop:
     NEWLINE
     PRINT_STRING cont
-    GET_STRING inputBuffer, 256   ; Read response for continuing the loop
+    GET_STRING input, 256
     NEWLINE
 
-    ; Check if the response is 'Y' or 'y' to continue the loop
-    cmp byte [inputBuffer], 'Y'
+    cmp byte [input], 'Y'
     je start
-    cmp byte [inputBuffer], 'y'
+    cmp byte [input], 'y'
     je start
-    cmp byte [inputBuffer], 'N'
-    je end2
-    cmp byte [inputBuffer], 'n'
-    je end2
-
-    ;If the response is neither 'Y' nor 'y', print an error message
+    cmp byte [input], 'N'
+    je end
+    cmp byte [input], 'n'
+    je end
     jmp invalid_input
 
-end2:    
+end:    
     xor edi, edi            
     ret
