@@ -94,7 +94,6 @@ end:
     PRINT_STRING cont
     GET_DEC 8, r9           ; buffer to read the next line
     GET_CHAR answer
-    PRINT_CHAR answer
     NEWLINE
     cmp byte [answer], 'Y'
     je start
