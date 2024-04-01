@@ -1,0 +1,32 @@
+%include "io64.inc"
+
+section .data
+    inputBuffer resb 256  ; Define input buffer directly in the .data section
+
+section .text
+global main
+
+main:
+    ; Infinite loop for continuous input
+input_loop:
+    ; Prompt for input
+    PRINT_STRING "Enter a string (or press Enter to exit): "
+
+    ; Read input directly into the inputBuffer, max 256 characters
+    GET_STRING inputBuffer, 256
+
+    ; Check if the input is empty (just Enter pressed)
+    cmp byte [inputBuffer], 0
+    je exit_program
+
+    ; Print the input string
+    PRINT_STRING "You entered: "
+    PRINT_STRING inputBuffer
+    NEWLINE
+
+    ; Continue the input loop
+    jmp input_loop
+
+exit_program:
+    ; Exit the program
+    ret
