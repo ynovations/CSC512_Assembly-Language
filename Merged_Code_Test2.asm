@@ -46,7 +46,8 @@ ascii_to_int_loop:
     imul eax, eax, 10    
     add eax, ebx         
     xor ebx, ebx         
-
+    ;PRINT_DEC 8, EBX
+    ;NEWLINE
     inc esi              
     jmp ascii_to_int_loop     
 
@@ -131,9 +132,14 @@ end:
     je start
     cmp byte [inputBuffer], 'y'
     je start
+    cmp byte [inputBuffer], 'N'
+    je end2
+    cmp byte [inputBuffer], 'n'
+    je end2
 
-        ; If the response is neither 'Y' nor 'y', print an error message
+    ;If the response is neither 'Y' nor 'y', print an error message
     jmp invalid_input
-    
+
+end2:    
     xor edi, edi            
     ret
