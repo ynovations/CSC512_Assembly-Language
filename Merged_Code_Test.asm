@@ -1,0 +1,104 @@
+%include "io64.inc"
+
+section .data
+    ;Numeric Variables
+    number dq 0
+    sum_result dq 0         
+    division_result dq 0    
+    remainder_result dq 0   
+
+    ;String Variables
+    err db "Error: Invalid input", 0
+    nega db "Error: Negative number input", 0
+    harshad_msg db "Harshad Number: Yes", 0
+    not_harshad_msg db "Harshad Number: No", 0
+    cont db "Do you want to continue (Y/N)? ", 0
+    answer db 0
+
+section .text
+global main
+
+main:
+    ;mov rbp, rsp; for correct debugging
+start:
+    PRINT_STRING "Input Number: "
+    GET_DEC 8, [number]         
+    PRINT_DEC 8, [number]
+    NEWLINE
+    mov rax, [number]           
+    cmp rax, 0          
+    jz invalid_input        
+    jl negative_input
+    xor rbx, rbx                
+
+    
+    
+    PRINT_STRING "Digits: "
+    
+digit_extract:
+    xor rdx, rdx                
+    mov rcx, 10                 
+    div rcx                     
+    add rbx, rdx                
+    PRINT_DEC 8, rdx
+    cmp rax, 0                 
+    je calculation
+    PRINT_STRING ","
+    jne digit_extract            
+
+calculation:
+    mov [sum_result], rbx       
+    NEWLINE
+    PRINT_STRING "Sum of digits: "
+    PRINT_DEC 8, sum_result
+
+    mov rax, [number]           
+    mov rbx, [sum_result]       
+    xor rdx, rdx                
+    div rbx                     
+
+    mov [division_result], rax  
+    NEWLINE
+    PRINT_STRING "Quotient: "
+    PRINT_DEC 8, division_result
+
+    mov [remainder_result], rdx 
+    NEWLINE
+    PRINT_STRING "Remainder: "
+    PRINT_DEC 8, remainder_result
+
+    cmp rdx, 0
+    je is_harshad
+    jmp not_harshad    
+
+negative_input:
+    PRINT_STRING nega
+    jmp end
+
+invalid_input:      ;NOT WORKING. Malabo ata?
+    NEWLINE
+    PRINT_STRING err
+    jmp end  
+    
+
+not_harshad:
+    NEWLINE
+    PRINT_STRING not_harshad_msg
+    jmp end
+
+is_harshad:
+    NEWLINE
+    PRINT_STRING harshad_msg
+    jmp end
+    
+end:
+    NEWLINE
+    PRINT_STRING cont
+    GET_DEC 8, r9           ; buffer to read the next line
+    GET_CHAR answer
+    NEWLINE
+    cmp byte [answer], 'Y'
+    je start
+    
+    xor edi, edi            
+    ret
