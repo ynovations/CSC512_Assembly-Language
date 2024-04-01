@@ -13,7 +13,6 @@ section .data
     harshad_msg db "Harshad Number: Yes", 0
     not_harshad_msg db "Harshad Number: No", 0
     cont db "Do you want to continue (Y/N)? ", 0
-    answer db 0
 
 section .bss
     inputBuffer resb 256      ; Store the number of digits extracted
@@ -23,12 +22,11 @@ global main
 
 main:
     mov rbp, rsp; for correct debugging
-    ;mov rbp, rsp; for correct debugging
+
 start:
 
     PRINT_STRING "Input Number: "
     GET_STRING inputBuffer, 256     ; Read input into buffer, max 256 characters
-
     mov eax, 0                      ; EAX will hold the final integer
     mov esi, inputBuffer            ; ESI points to the start of the buffer
 ascii_to_int_loop:
@@ -56,8 +54,8 @@ end_read:
     ; Terminate the string with a null terminator
     mov byte [esi], 0
 validate_input:
-    PRINT_DEC 8, RAX     
-    NEWLINE
+    ;PRINT_DEC 8, RAX     
+    ;NEWLINE
     cmp eax, 0         ; Check if the result is zero
     jz invalid_input              ; If the result is zero, it means the input was empty
 
@@ -108,7 +106,7 @@ negative_input:
     jmp end
 
 invalid_input:
-    NEWLINE
+    ;NEWLINE
     PRINT_STRING err
     jmp end  
     
@@ -122,16 +120,20 @@ is_harshad:
     PRINT_STRING harshad_msg
     jmp end
     
-
 end:
     NEWLINE
     PRINT_STRING cont
-    GET_DEC 8, r9           ; buffer to read the next line
-    GET_CHAR answer
+    GET_STRING inputBuffer, 256   ; Read response for continuing the loop
     NEWLINE
-    cmp byte [answer], 'Y'
 
+    ; Check if the response is 'Y' or 'y' to continue the loop
+    cmp byte [inputBuffer], 'Y'
     je start
+    cmp byte [inputBuffer], 'y'
+    je start
+
+        ; If the response is neither 'Y' nor 'y', print an error message
+    jmp invalid_input
     
     xor edi, edi            
     ret
